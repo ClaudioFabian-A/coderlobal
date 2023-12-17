@@ -1,0 +1,32 @@
+<h1>realtime products</h1>
+<div>
+  <div class="formulario">
+    <form id="idForm" action="./api/products" method="POST">
+      <h2 class="subtitle">Registro de productos</h2>
+      <label class="label" for="title">Nombre</label>
+      <input type="text" name="title" id="title" placeholder="Nombre" required />
+      <label for="description">Descripción</label>
+      <input type="text" name="description" id="description" placeholder="Descripción" required />
+      <label for="category">Categoría</label>
+      <input type="text" name="category" id="category" placeholder="Categoría" required />
+      <label for="code">Código</label>
+      <input type="text" name="code" id="code" placeholder="Código" required />
+      <label for="stock">Stock</label>
+      <input type="number " name="stock" id="stock" placeholder="0" required />
+      <label for="price">Precio $</label>
+      <input type="float" name="price" id="price" placeholder="00.00" required />
+      <label for="thumbnail">Imagen: url</label>
+      <input type="text" name="thumbnail" id="thumbnail" placeholder="https://imagen.jpg" />
+      <div>
+        <button type="submit" onclick="idFormEvent()">Registrar</button>
+        <button id="delete-btn" type="button">Eliminar</button>
+      </div>
+    </form>
+  </div>
+
+  
+
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="./js/realTimeProducts.js"></script>

@@ -1,0 +1,89 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="stylesheet" href="/css/style.css" />
+  <title>{{title}}</title>
+</head>
+
+<body>
+  <div class="container">
+    <nav class="header header1">
+      <div class="header1">
+
+        <div class="boton2">
+          <div class="groupA ul">
+            <a class="button1 onclick ulli" aria-current="page" href="/">Home</a>
+            <a class="button1 onclick ulli" href="/realTimeProducts">RealTimeProducts</a>
+            <a class="button1 onclick ulli" href="/products">Products</a>
+            <a class="button1 onclick ulli" href="/chat">chat</a>
+
+            <a class="button1 onclick ulli" href="/chat">chat</a>
+          </div>
+          <div>
+
+            <ul>
+              <span id="user">{{user}}</span>
+              <li>Bienvenido {{user}}</li>
+              <li><a class="dropdown-item Logout" id="logout">LogOut</a></li>
+
+            </ul>
+            <div>
+              <a id="carrito">
+                <button>
+                  <i></i>
+                  <span id="numerito"
+                    class=>0</span>
+                </button>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </div>
+
+  </nav>
+  
+  </div>
+
+  {{{body}}}
+
+  <div>
+    <nav>
+      <ul>
+        {{#if product.hasPrevPage}}
+        <li>
+          <a href={{product.prevLink}} tabindex="-1" aria-disabled={{product.hasPrevPage}}>Previous</a>
+        </li>
+        {{else}}
+        <li>
+          <a href={{product.prevLink}} tabindex="-1" aria-disabled={{product.hasPrevPage}}>Previous</a>
+        </li>
+        {{/if}}
+
+        <li>
+          <span>Pagina
+            {{product.page}}/{{product.totalPages}}</span>
+        </li>
+
+        {{#if product.hasNextPage}}
+        <li>
+          <a href={{product.nextLink}} aria-disabled={{product.hasNextPage}}>Next</a>
+        </li>
+        {{else}}
+        <li>
+          <a href={{product.nextLink}} aria-disabled={{product.hasNextPage}}>Next</a>
+        </li>
+        {{/if}}
+
+      </ul>
+    </nav>
+  </div>
+
+
+</body>
+
+</html>

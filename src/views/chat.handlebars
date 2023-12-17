@@ -1,0 +1,21 @@
+<h2>Chat de socket .io</h2>
+
+<div id="chatContainner">
+    <h3 id="userNameI">Cliente</h3>
+    <div id="chatMessage">
+        <div class="render">
+            <p id="pChat"> </p>
+        </div>
+    </div>
+
+    <form id="chatForm">
+        <input type="text" name="message" id="message" />
+        <input type="submit" value="Submit">
+    </form>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/chat.js"></script>
+
