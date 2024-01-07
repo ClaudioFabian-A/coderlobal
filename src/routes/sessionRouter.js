@@ -1,45 +1,35 @@
-import jwt from "jsonwebtoken";
+
 import passportCall from "../middlewares/passportCall.js";
-import BasRouter from "./baseRouter.js";
-import config from "../config/config.js";
+import BaseRouter from "./baseRouter.js";
+import sessionsController from "../controllers/sessionsController.js";
 
 
 
 
-class sessionRouter extends BasRouter {
+
+class SessionsRouter extends BaseRouter {
     init() {
-        
-        this.post(
-            "/register",
-            ["NO_AUTH"],
-            passportCall("register", { strategyType: "LOCALS" }),
-            async (req, res) => {
-              res.cookieLine("cart");
-              res.sendSuccessWithPayload("Registered");
-            }
-          );
-           
-   
-        this.post("/login", ["NO_AUTH"], passportCall("login", { strategyType: "LOCALS" }), async (req, res) => {
-            const userToken = {
-                name: `${req.user.firstName} ${req.user.lastName}`,
-                id: req.user._id,
-                role: req.user.role,
-                cart: req.user.cart,
-            };
-            const token = jwt.sign(tokenizedUser, config.JWT.SECRET, {
-                expiresIn: "1d",
-            });
-            // const token = jwt.sing(userToken, config.jwt.SECRET, { expiresIn: "2d", });
-            res.cookie(config.JWT.COOKIE, token);
-            res.cookieLine("cart");
-            res.sendSuccessWithPayload("logged");
-            // res.render("products")
-        })
-        this.get("/current", ["AUTH"], async (req, res) => { res.sendSuccessWithPayload(req.user); });
+
+        this.post("/register", ["PUBLIC"], passportCall("register", { strategyType: "LOCALS" }),
+            sessionsController.register
+        );
+        this.post("/login", ["NO_AUTH"], passportCall("login", { strategyType: "LOCALS" }),
+            sessionsController.login);
+        this.get("/logout", ["AUTH"], sessionsController.logout);
+        this.get("/current", ["AUTH"], sessionsController.current);
+
+        this.get("/github", ["NO_AUTH"], passportCall("github", { strategyType: "GITHUB" }), async (req, res) => { }
+        );
+
+        this.get("/githubcallback", ["NO_AUTH"], passportCall("github", { scope: ["profile", "email"], strategyType: "GITHUB", }), sessionsController.githubcallback
+        );
+        this.get("/google", ["NO_AUTH"], passportCall("google", { scope: ["profile", "email"], strategyType: "OAUTH", }), async (req, res) => {});
+        this.get("/googlecallback", ["NO_AUTH"], passportCall("google", { scope: ["profile", "email"], strategyType: "OAUTH", }), sessionsController.googlecallback);
+
+        this.post("/passwordRestoreRequest", ["PUBLIC"], sessionsController.passwordRestoreRequest);
+        this.put("/password-restore", ["PUBLIC"], sessionsController.passwordRestore);
     }
 
 }
-const sessionsRouter = new sessionRouter();
+const sessionsRouter  = new SessionsRouter();
 export default sessionsRouter.getRouter();
-

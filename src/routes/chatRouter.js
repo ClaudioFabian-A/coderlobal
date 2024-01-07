@@ -1,15 +1,22 @@
-import {Router} from "express";
-import chatManager from "../DAO/mongo/managers/chatManager.js";
+import BaseRouter from "./baseRouter.js";
+import { chatService } from "../services/index.js";
 
-let ChatManager = new chatManager();
-const chatRouter = Router();
+class ChatRouter extends BaseRouter {
+  init() {
+    this.get("/", ["AUTH"], async (req, res) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - 1);
+      const searchFilter = {
+        createdAt: { $gte: date.toISOString() },
+      };
 
-chatRouter.get("/chat", async( req,res)=>{
-    res.send( await ChatManager.getMessages())
-});
-chatRouter.post("/chat", async(req,res)=>{
-    let {usuario, chat}= param.body;
-    res.send( await ChatManager.createMessage(usuario, chat));
-})
-// export default chatRouter;
+      const messages = await chatService.getMessages(searchFilter);
+      res.sendSuccessWithPayload(messages);
+    });
+  }
+}
+
+const chatRouter = new ChatRouter();
+
+export default chatRouter.getRouter();
 

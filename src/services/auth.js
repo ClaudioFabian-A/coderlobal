@@ -1,24 +1,24 @@
 import bcrypt from "bcrypt";
 
-const createHash = async (password) => {
-  const salts = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salts);
+const createHash = async(password) => {
+    const salts = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salts);
 };
 
-const validatePassword = async (password, hashedPassword) => {
-  return bcrypt.compare(password, hashedPassword);
+const validatePassword = async(password, hashedPassword) => {
+    return bcrypt.compare(password, hashedPassword);
 };
 
 const extractAuthToken = (req) => {
-  let token = null;
-  if (req.cookies) {
-    token = req.cookies["authCookie"];
-  }
-  return token;
+    let token = null;
+    if (req.cookies) {
+        token = req.cookies["Claudio"];
+    }
+    return token;
 };
 
 export default {
-  createHash,
-  extractAuthToken,
-  validatePassword,
+    createHash,
+    extractAuthToken,
+    validatePassword,
 };

@@ -3,8 +3,7 @@ import fs from "fs";
 export default class ProductManager {
   constructor(path) {
     this.path = path;
-  }
-  //agregar producto
+  } 
 
   addProduct = async (product) => {
     try {
@@ -110,7 +109,7 @@ export default class ProductManager {
       const index = products.findIndex((p) => p.id === parseInt(id));
 
       if (index < 0) {
-        return `Can't find product with id : ${id}`;
+        return `Can't find this id : ${id}`;
       }
       products.splice(index, 1);
 

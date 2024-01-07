@@ -1,16 +1,20 @@
+<h1 class="title">Ingresa</h1>
 
-<div>
-    <h1>login</h1>
-<h1>this is the login</h1>
-<form id="logForm">
-<label >Email</label>
-<input type="email" name="email"><br/>
-<label >password</label>
-<input type="password" name="password"><br/>
-<input type="submit"><br/>
-    
-{{!-- <button id="gitButton">gitLog</button> --}}
+<form class="formProducts" id="logForm">
+  <label class="label">Email</label>
+  <input class="controls" name="email" />
+
+  <label class="label">Contraseña</label>
+  <input class="controls" name="password" type="password" />
+
+  <input class="btn btn-success" type="submit" />
 </form>
 
-</div>
+<p>¿Olvidaste tu contraseña? Puedes restablecerla
+  <button
+    class="btn btn-danger w-25"
+    type="button"
+    onclick="restorePassword()"
+  >aqui</button></p>
+
 <script src="/js/login.js"></script>

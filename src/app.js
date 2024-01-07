@@ -3,28 +3,58 @@ import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import handlebars from "express-handlebars";
 import cookieParser from "cookie-parser";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUIExpress from "swagger-ui-express";
+import cors from "cors";
+
+
 
 import productRouter from "./routes/productsRouter.js";
 import cartRouter from "./routes/cartRouter.js";
 import viewsRouter from './routes/viewsRouter.js';
-import sessionRouter from "./routes/sessionRouter.js";
-// import chatRouter from "./routes/chatRouter.js";
+import sessionsRouter from "./routes/sessionRouter.js";
+import chatRouter from "./routes/chatRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 
 import __dirname from "./utils.js";
 import config from "./config/config.js";
-import initializesStrategy from "./config/passportConfig.js";
 
-import ProductManager from "./DAO/mongo/managers/productManager.js";
-import ChatManager from "./DAO/mongo/managers/chatManager.js";
-
-
+import initializePassportStrategies from "./config/passportConfig.js";
+import registerChatHandler from "./listeners/chatListener.js";
 
 const app = express();
+const corsOptions = {
+  origin: 'http://localhost:8080',  // Sustituye con la URL de tu frontend
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
 const PORT = process.env.PORT || 8080;
 
-const connection = mongoose.connect(config.mongo.URL);
-console.log(connection);
-console.log(`base en linea`);
+const connection =  mongoose.connect(config.mongo.URL);
+
+console.log(`base en linea `);
+const swaggerSpecOptions = {
+    definition: {
+      openapi: "3.0.1",
+      info: {
+        title: "coderlobal",
+        description: "E-commerce",
+      },
+    },
+    apis: [`${__dirname}/docs/**/*.yml`],
+  };
+  
+  const swaggerSpec = swaggerJSDoc(swaggerSpecOptions);
+  app.use(
+    "/api-docs",
+    swaggerUIExpress.serve,
+    swaggerUIExpress.setup(swaggerSpec)
+  );
+
 
 
 app.engine("handlebars", handlebars.engine());
@@ -36,13 +66,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-initializesStrategy();
+initializePassportStrategies();
 
 app.use('/', viewsRouter);
 app.use("/api/products", productRouter);
-app.use("/api/cart", cartRouter);
-app.use('/api/sessions', sessionRouter);
-app.use("/", chatRouter);
+app.use("/api/carts", cartRouter);
+app.use('/api/sessions', sessionsRouter);
+app.use("/api/chat", chatRouter);
+app.use("/api/users", usersRouter);
+
+
+app.use("/loggerTest", async (req, res) => {
+    req.logger.log("fatal", "Logger test fatal");
+    req.logger.log("error", "Logger test error");
+    req.logger.log("warning", "Logger test warning");
+    req.logger.log("info", "Logger test info");
+    req.logger.log("http", "Logger test http");
+    req.logger.log("debug", "Logger test");
+    res.send({ status: 200, message: "Logger test" });
+});
+
+app.use((error, req, res, next) => {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+});
 
 
 const httpServer = app.listen(PORT, () => {
@@ -52,69 +99,13 @@ const httpServer = app.listen(PORT, () => {
 
 const socketServer = new Server(httpServer);
 
-const prodManager = new ProductManager();
-const chatManager = new ChatManager();
-
-
-
 
 
 socketServer.on("connection", async (socket) => {
-
-    const prodList = await prodManager.getProducts();
-    // let chatManager = new ChatManager();
-    // let chat = await chatManager.getMessages();
-    console.log("Cliente conectado con id: ", socket.id);
-    socketServer.emit("prodList", prodList);
-
-    socket.on("updateProduct", async (product) => {
-        let prodManager = new ProductManager()
-        await prodManager.addProduct(obj)
-
-        let prodList = await prodManager.getProducts({});
-        socketServer.emit("prodList", prodList);
-    });
-    
-
-    socket.on("articleDeleted", async (id) => {
-        // let prodManager = new ProductManager();
-
-        await prodManager.deleteProduct(id);
-        // let newProdList = new ProductManager()
-
-        let prodList = await prodManager.getProducts({});
-        socketServer.emit("prodList", prodList);
+    registerChatHandler(io, socket);
+    socket.on("disconnect", () => {
+        console.log(`Usuario with ID : ${socket.id} disconnected `);
     });
 
-    socket.on("disconnected", () => {
-        console.log("Cliente desconectado");
-    });
-    let chatManager = new ChatManager();
-    let chat = await chatManager.getMessages();
-    console.log("Cliente conectado con id: ", socket.id);
-    socketServer.emit("prodList", prodList);
-    socketServer.emit("message", chat);
-
-    socket.on("newUser", (userValue) => {
-        console.log("userValue", userValue);
-        socket.broadcast.emit("bCast", userValue);
-    });
-    socket.on("disconnected", () => {
-        console.log(`user ${socket.id} desconectado`);
-    });
-    socket.on("message", async (data) => {
-        console.log(data);
-        await chatManager.createMessage(data);
-        socketServer.emit("pChat", await chatManager.getMessages());
-    });
 });
-
-
-
-
-
-
-
-
-
 

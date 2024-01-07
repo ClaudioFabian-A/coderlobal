@@ -1,29 +1,21 @@
-import baseRouter from "./baseRouter.js"
-import { Router } from "express";
-import cartsManager from "../DAO/mongo/managers/cartManager.js";
-import productManager from "../DAO/mongo/managers/productManager.js"
-import  __dirname  from "../utils.js";
+import BaseRouter from "./baseRouter.js"
+import cartsControler from "../controllers/cartController.js";
 
 
-const PManager = new productManager();
-const CManager = new cartsManager();
 
-
-class cartsRouter extends baseRouter {
+class CartsRouter extends BaseRouter {
     init() {
-        this.get("/:cid", ["USER"], async (req, res) => {
-            const { cid } = req.params;
-            const cart = await CManager.findOne({ _id: cid });
-            if (!cart) { return res.status(404).send({ status: "error", message: "not found" }) } else { res.send({ status: "success", payload: cart }); }
-        });
-        this.post("/carts/", async (req, res) => {
-            let cartCreate = await CManager.createNewCart();
-            res.send({ status: "success", payload: cart })
-        })
+        this.get("/:cid", ["USER", "PREMIUM"], cartsControler.getCartById);
+        this.get("/:cid/purchase",["USER", "PREMIUM"], cartsControler.purchasedCart);
+        this.post("/", ["USER", "PREMIUM"],cartsControler.createCart);
+        this.put(":cid/products/:pid",["NO_AUTH"],cartsControler.addProduct);
+        this.put("/products/:pid",["USER", "PREMIUM"],cartsControler.addProduct);
+        this.delete("/:cid",["USER", "PREMIUM"],cartsControler.deleteArts);
+        this.delete("/:cid",["ADMIN"],cartsControler.deleteCart);
     }
 }
 
 
 
-const CartRouter = new cartsRouter();
-export default CartRouter.getRouter();
+const cartRouter = new CartsRouter();
+export default cartRouter.getRouter();

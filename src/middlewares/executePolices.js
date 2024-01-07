@@ -4,10 +4,10 @@ const executePolicies = (policies) => {
       if (policies[0] === "PUBLIC") return next();
       if (policies[0] === "NO_AUTH" && !req.user) return next();
       if (policies[0] === "NO_AUTH" && req.user)
-        return res.sendUnauthorized("You are logged");
+        return res.sendUnauthorized("You are logged In");
       if (policies[0] === "AUTH" && req.user) return next();
       if (policies[0] === "AUTH" && !req.user)
-        return res.sendUnauthorized("You are not logged");
+        return res.sendUnauthorized("Not logged");
       if (!policies.includes(req.user.role.toUpperCase())) {
         res.sendForbidden("You cannot get access");
       }
